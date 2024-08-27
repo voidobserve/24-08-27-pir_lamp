@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project MCU="MC30P6280" ID="0x6280" MCU_Type="CRISC" Date="2012-08-28" VS="1.01">
+  <ProWindows>
+    <Explorer fName="MC30P6280">
+      <SouceCode fName="SourceCode">
+        <asmFile fName="MC30P6280.c" fPath="\MC30P6280.c" />
+      </SouceCode>
+      <SouceCode fName="Output">
+        <asmFile fName="MC30P6280.lst" fPath="\MC30P6280.lst" />
+        <asmFile fName="MC30P6280.s19" fPath="\MC30P6280.s19" />
+      </SouceCode>
+      <SouceCode fName="Debug">
+        <asmFile fName="user.h" fPath="\user.h" />
+      </SouceCode>
+    </Explorer>
+  </ProWindows>
+  <Option Value="5" Value0="0" Value1="cd" Value2="7" Value3="0" Value4="0" Value5="0" Value6="0" Value7="0" Value8="0" Value9="0" Value10="0" Value11="0" Value12="0" Value13="0" />
+  <Compiler Name="gpasm.exe" />
+  <NewCompiler Name="false" />
+  <Language Name="C" />
+  <LoadFillMode Flag="flase" FillValue="0" />
+  <ChipVCCValue Value="0x01" />
+</Project>
