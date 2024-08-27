@@ -18,6 +18,6 @@
   <Compiler Name="gpasm.exe" />
   <NewCompiler Name="false" />
   <Language Name="C" />
-  <LoadFillMode Flag="flase" FillValue="0" />
+  <LoadFillMode Flag="false" FillValue="0" />
   <ChipVCCValue Value="0x01" />
 </Project>

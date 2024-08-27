@@ -11,17 +11,16 @@
 
 #include "user.h"
 
-
 #if USE_MY_DEBUG
 // 使用红外协议发送32位数据，低位先行
 void send_32bits_data_by_irsir(u32 send_data)
 {
 	// 先发送格式头 9ms高电平+4.5ms低电平
 	// __set_input_pull_up(); // 高电平
-	P17D = 1;
+	P15D = 1;
 	delay_ms(9);
 	// __set_output_open_drain(); // 低电平
-	P17D = 0;
+	P15D = 0;
 	delay_100us(45); // 延时4.5ms
 
 	for (u8 i = 0; i < 32; i++)
@@ -30,33 +29,32 @@ void send_32bits_data_by_irsir(u32 send_data)
 		{
 			// 如果要发送逻辑1
 			// __set_input_pull_up();	   // 高电平
-			P17D = 1;
+			P15D = 1;
 			delay_100us(6); // 600us
 			// __set_output_open_drain(); // 低电平
-			P17D = 0;
+			P15D = 0;
 			delay_100us(17); // 1700us
 		}
 		else
 		{
 			// 如果要发送逻辑0
 			// __set_input_pull_up();	   // 高电平
-			P17D = 1;
+			P15D = 1;
 			delay_100us(6); // 600us
 			// __set_output_open_drain(); // 低电平
-			P17D = 0;
+			P15D = 0;
 			delay_100us(6); // 600us
 		}
 	}
 
 	// 最后，设置为低电平
 	// __set_output_open_drain(); // 低电平
-	P17D = 0;
+	P15D = 0;
 }
 #endif
 
-
 // 100us级延时，误差5%左右，（用于1.5ms的延时和单线发送数据上）
-// 前提条件：FCPU = 8MHz
+// 前提条件：FCPU = FHIRC / 1
 void delay_100us(u32 xus)
 {
 	while (xus)
@@ -71,8 +69,25 @@ void delay_100us(u32 xus)
 	}
 }
 
+// 延时5us，还是会有误差
+// 不能传参，传参也会影响延时时间
+void delay_5us(void)
+{
+	u8 xus = 2;
+	while (xus--)
+	{
+		// Nop();
+		__asm;
+		// nop;
+		// nop;
+		// nop;
+		// nop;
+		__endasm;
+	}
+}
+
 // 毫秒级延时
-// 前提条件：FCPU = 8MHz
+// 前提条件：FCPU = FHIRC / 1
 void delay_ms(u32 xms)
 {
 	while (xms)
@@ -85,7 +100,6 @@ void delay_ms(u32 xms)
 		xms--;
 	}
 }
-
 
 // 人体检测传感器检测的数据引脚切换为输入模式
 void pir_pin_in(void)
@@ -108,13 +122,16 @@ void pir_pin_out(void)
 // 检测到1，开启常亮模式
 void sel_pin_config(void)
 {
-	DDR1 |= 0x01;  // 输入模式
-	PUCON &= 0x01; // 使能上拉电阻
+	DDR1 |= 0x01;	  // 输入模式
+	PUCON &= ~(0x01); // 使能上拉电阻
 }
 
-// 定时器0配置
-void timer0_config(void)
+// 检测光敏的引脚
+void light_sensor_pin_config(void)
 {
+	DDR1 |= 0x01 << 1;
+	// PUCON &= ~(0x01 << 1); // 使能上拉电阻
+	PDCON &= ~(0x01 << 1); // 使能下拉电阻
 }
 
 /************************************************
@@ -165,7 +182,8 @@ void Sys_Init(void)
 	C_RAM();
 	IO_Init();
 
-	sel_pin_config(); // 拨码开关检测引脚的配置
+	sel_pin_config();		   // 拨码开关检测引脚的配置
+	light_sensor_pin_config(); // 检测光敏的引脚的相关配置
 
 	GIE = 1;
 }
@@ -212,7 +230,7 @@ u16 get_pirdata(void)
 					  // delay_5us();
 
 #if USE_MY_DEBUG
-		P17D = ~P17D;
+		P15D = ~P15D;
 #endif
 
 		// 读取数据
@@ -327,17 +345,28 @@ void mode_pir(void)
 	while (1)
 	{
 		// 退出条件 当开关状态切换时
-		// if (P02)
+		// if (SEL_PIN)
 		// {
-		//     delay_ms(20);
-		//     if (P02)
-		//     {
-		//         // 如果开关选择了常亮模式，退出当前的人体感应模式
-		//         return;
-		//     }
+		// 	for (i = 0; i < 20; i++)
+		// 	{
+		// 		if (SEL_PIN)
+		// 		{
+		// 			loop_cnt++;
+		// 		}
+		// 		delay_ms(1);
+		// 	}
+
+		// 	if (loop_cnt >= 16)
+		// 	{
+		// 		loop_cnt = 0; // 清除计数值
+		// 		// 如果开关选择了常亮模式，退出当前的人体感应模式
+		// 		return;
+		// 	}
+
+		// 	loop_cnt = 0; // 清除计数值
 		// }
 
-		// if (1 == get_detected_light())
+		if (1 == get_detected_light())
 		{
 			// 如果光敏器件没有检测到光
 			// 开始人体感应
@@ -345,11 +374,10 @@ void mode_pir(void)
 			for (i = 0; i < 3; i++)
 			{
 				pir_val = get_pirdata();
-				// printf("pir_val: %d\n", pir_val); // 测试时使用
 
-				if (wake_up_times >= 10)
+				if (wake_up_times >= 15)
 				{
-					if (pir_val >= 200)
+					if (pir_val >= PIR_THRESHOLD_VAL)
 					{
 						// 如果检测到的值大于 设定值，说明可能检测到有人
 						detect_cnt++;
@@ -363,9 +391,8 @@ void mode_pir(void)
 					{
 						IS_DETECT_PERSON_FLAG = 1;
 					}
-				} // if (wake_up_times >= 10)
+				} // if (wake_up_times >= 15)
 
-				// printf("pir_val: %d\n", pir_val);
 				delay_ms(20);
 			}
 			detect_cnt = 0; // 清空计数值
@@ -375,17 +402,14 @@ void mode_pir(void)
 				// 如果运行到这里，说明检测到有人
 				IS_DETECT_PERSON_FLAG = 0;
 
-				// P23 = P24 = 0;  // 点亮LED
 				led_on();		// 点亮LED
 				delay_ms(5000); // 5s内不做检测
-				// delay_ms(1000); // xs内不做检测
 
 				// 接下来的10s内，如果一直检测不到有人，则熄灭LED
 				for (i = 0; i < 500; i++)
 				{
 					pir_val = get_pirdata();
-					// printf("pir_val: %d\n", pir_val); // 测试时使用
-					if (pir_val >= 200)
+					if (pir_val >= PIR_THRESHOLD_VAL)
 					{
 						// 如果检测到的值大于 设定值，说明可能检测到有人
 						detect_cnt++;
@@ -416,25 +440,62 @@ void mode_pir(void)
 				else if (0 == IS_DETECT_PERSON_FLAG)
 				{
 					// 如果这段时间内一直检测不到人
-					// P23 = P24 = 1; // 熄灭
 					led_off(); // 熄灭LED
 					cur_light_status = 0;
 				}
 			}
+
 		} // 如果光敏器件没有检测到光
 
 		// 灯熄灭时，进入低功耗模式
 		if (0 == cur_light_status)
 		{
 			// 打开对应的定时器--20ms唤醒一次
+			TMRCR = 0x40;			   // 时钟源为内部 32768 Hz 低频
+			T0CR = 4;				   // 预分频器分配给T0(而不是WDT)，32分频
+			T0CNT = 255 - T0_CNT_TIME; // 递增计数器(20ms产生一次中断)
+			T0IE = 1;				   // 打开定时器
 
-			// // 进入低功耗模式
-			// Stop();
-			// Nop();
-			// Nop();
+			// 进入低功耗模式
+			Stop();
+			Nop();
+			Nop();
 
 			// 从低功耗唤醒后，关闭定时器
-		}
+			T0IE = 0;
+
+			if (wake_up_times <= 15)
+			{
+				wake_up_times++;
+			}
+
+			for (i = 0; i < 3; i++)
+			{
+				pir_val = get_pirdata();
+
+				if (wake_up_times >= 15)
+				{
+					if (pir_val >= PIR_THRESHOLD_VAL)
+					{
+						// 如果检测到的值大于 设定值，说明可能检测到有人
+						detect_cnt++;
+					}
+					else
+					{
+						detect_cnt = 0;
+					}
+
+					if (detect_cnt >= 3)
+					{
+						IS_DETECT_PERSON_FLAG = 1;
+					}
+				} // if (wake_up_times > 15)
+
+				delay_ms(20);
+			}
+
+			detect_cnt = 0; // 清空计数值
+		} // 灯熄灭时，进入低功耗模式 if (0 == cur_light_status)
 
 	} // while (1)
 }
@@ -447,10 +508,12 @@ void main(void)
 	P15D = 1;  // 传感器要一直供电
 	led_off(); // 熄灭所有LED
 
-#if 0 // while (1)
+#if 1 // while (1)
 
 	while (1)
 	{
+		u8 i = 0;
+
 #if 0 // 测试能否从传感器中读到数据
 	  // pir_data = get_pirdata();
 	  // send_32bits_data_by_irsir(pir_data);
@@ -459,7 +522,6 @@ void main(void)
 
 		// if (SEL_PIN)
 		// {
-		// 	u8 i = 0;
 		// 	for (i = 0; i < 20; i++)
 		// 	{
 		// 		if (SEL_PIN)
@@ -472,14 +534,26 @@ void main(void)
 		// 	if (loop_cnt >= 16)
 		// 	{
 		// 		// 高电平，LED常亮
-		// 	led_on();
-		// 	cur_light_status = 1; //
+		// 		led_on();
+		// 		cur_light_status = 1; //
 		// 	}
 
 		// 	loop_cnt = 0; // 清除计数值
 		// }
-		// else
+		// else if (0 == SEL_PIN)
+		// {
+		// 	for (i = 0; i < 20; i++)
+		// 	{
+		// 		if (0 == SEL_PIN)
+		// 		{
+		// 			loop_cnt++;
+		// 		}
+		// 		delay_ms(1);
+		// 	}
+
+		// if (loop_cnt >= 16)
 		{
+			// loop_cnt = 0; // 清除计数值
 			// 开关一侧检测到是低电平，开启人体感应模式
 			led_on(); // 点亮LED
 			cur_light_status = 1;
@@ -489,6 +563,12 @@ void main(void)
 
 			mode_pir(); // 人体感应模式 (内部有关循环)
 		}
+		// else
+		// {
+		// }
+
+		loop_cnt = 0; // 清除计数值
+					  // }
 
 #if 0  // 5us延时测试
 		delay_5us();
@@ -497,19 +577,17 @@ void main(void)
 	}
 #endif
 
-#if 1 // 低功耗测试
+#if 0 // 低功耗测试（测试通过）
 
-	T0CR &= ~(0x01 << 3); // 预分频器分配给T0
-	T0CR |= 5;			  // 32分频
-	TM0CR = 0x83;		  // 时钟源为 32768Hz 低频（RTC作为时钟源）， 使能T0中断，清除中断标志
-	// 约1ms计数一次
-	T0CNT = 255 - 20; // 递增计数器(20ms产生一次中断)
-	T0IE = 0;		  // 关闭定时器
+	TMRCR = 0x40;			   // 时钟源为内部 32768 Hz 低频
+	T0CR = 4;				   // 预分频器分配给T0(而不是WDT)，32分频
+	T0CNT = 255 - T0_CNT_TIME; // 递增计数器(20ms产生一次中断)
+	T0IE = 0;				   // 关闭定时器
 
 	while (1)
 	{
 		// 开启低功耗唤醒的定时器
-		T0CNT = 255 - 20;
+		T0CNT = 255 - T0_CNT_TIME;
 		T0IE = 1;
 		// Nop();
 		// Nop();
@@ -519,11 +597,11 @@ void main(void)
 		Nop();
 
 		// 关闭定时器
-		T0IE = 255 - 20;
+		T0IE = 255 - T0_CNT_TIME;
 		T0IE = 0;
 
 		// 测试周期唤醒的时间是否正确
-		P20D = ~P20D;
+		P15D = ~P15D;
 	}
 
 #endif // 低功耗测试
@@ -545,8 +623,8 @@ void int_isr(void) __interrupt
 
 	if ((T0IF) && (T0IE))
 	{
+		T0CNT = 255 - T0_CNT_TIME; // 递增计数器
 		T0IF = 0;
-		T0CNT = 255 - 20; // 递增计数器
 	}
 
 	__asm;
