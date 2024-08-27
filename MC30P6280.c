@@ -123,7 +123,8 @@ void pir_pin_out(void)
 void sel_pin_config(void)
 {
 	DDR1 |= 0x01;	  // 输入模式
-	PUCON &= ~(0x01); // 使能上拉电阻
+	// PUCON &= ~(0x01); // 使能上拉电阻
+	PDCON &= ~(0x01); // 使能下拉电阻
 }
 
 // 检测光敏的引脚
@@ -345,28 +346,28 @@ void mode_pir(void)
 	while (1)
 	{
 		// 退出条件 当开关状态切换时
-		// if (SEL_PIN)
-		// {
-		// 	for (i = 0; i < 20; i++)
-		// 	{
-		// 		if (SEL_PIN)
-		// 		{
-		// 			loop_cnt++;
-		// 		}
-		// 		delay_ms(1);
-		// 	}
+		if (SEL_PIN)
+		{
+			for (i = 0; i < 20; i++)
+			{
+				if (SEL_PIN)
+				{
+					loop_cnt++;
+				}
+				delay_ms(1);
+			}
 
-		// 	if (loop_cnt >= 16)
-		// 	{
-		// 		loop_cnt = 0; // 清除计数值
-		// 		// 如果开关选择了常亮模式，退出当前的人体感应模式
-		// 		return;
-		// 	}
+			if (loop_cnt >= 16)
+			{
+				loop_cnt = 0; // 清除计数值
+				// 如果开关选择了常亮模式，退出当前的人体感应模式
+				return;
+			}
 
-		// 	loop_cnt = 0; // 清除计数值
-		// }
+			loop_cnt = 0; // 清除计数值
+		}
 
-		if (1 == get_detected_light())
+		// if (1 == get_detected_light())
 		{
 			// 如果光敏器件没有检测到光
 			// 开始人体感应
@@ -514,61 +515,61 @@ void main(void)
 	{
 		u8 i = 0;
 
-#if 0 // 测试能否从传感器中读到数据
-	  // pir_data = get_pirdata();
-	  // send_32bits_data_by_irsir(pir_data);
-	  // delay_ms(20);
+#if 0  // 测试能否从传感器中读到数据
+	   // pir_data = get_pirdata();
+	   // send_32bits_data_by_irsir(pir_data);
+	   // delay_ms(20);
 #endif // 测试能否从传感器中读到数据
 
-		// if (SEL_PIN)
-		// {
-		// 	for (i = 0; i < 20; i++)
-		// 	{
-		// 		if (SEL_PIN)
-		// 		{
-		// 			loop_cnt++;
-		// 		}
-		// 		delay_ms(1);
-		// 	}
-
-		// 	if (loop_cnt >= 16)
-		// 	{
-		// 		// 高电平，LED常亮
-		// 		led_on();
-		// 		cur_light_status = 1; //
-		// 	}
-
-		// 	loop_cnt = 0; // 清除计数值
-		// }
-		// else if (0 == SEL_PIN)
-		// {
-		// 	for (i = 0; i < 20; i++)
-		// 	{
-		// 		if (0 == SEL_PIN)
-		// 		{
-		// 			loop_cnt++;
-		// 		}
-		// 		delay_ms(1);
-		// 	}
-
-		// if (loop_cnt >= 16)
+		if (SEL_PIN && 0 == cur_light_status) // 如果灯是灭的，才进行下一步，否则灯会有跳动
 		{
-			// loop_cnt = 0; // 清除计数值
-			// 开关一侧检测到是低电平，开启人体感应模式
-			led_on(); // 点亮LED
-			cur_light_status = 1;
-			delay_ms(3000);
-			led_off(); // 熄灭LED
-			cur_light_status = 0;
+			for (i = 0; i < 20; i++)
+			{
+				if (SEL_PIN)
+				{
+					loop_cnt++;
+				}
+				delay_ms(1);
+			}
 
-			mode_pir(); // 人体感应模式 (内部有关循环)
+			if (loop_cnt >= 16)
+			{
+				// 高电平，LED常亮
+				led_on();
+				cur_light_status = 1; //
+			}
+
+			loop_cnt = 0; // 清除计数值
 		}
-		// else
-		// {
-		// }
+		else if (0 == SEL_PIN)
+		{
+			for (i = 0; i < 20; i++)
+			{
+				if (0 == SEL_PIN)
+				{
+					loop_cnt++;
+				}
+				delay_ms(1);
+			}
 
-		loop_cnt = 0; // 清除计数值
-					  // }
+			if (loop_cnt >= 16)
+			{
+				// loop_cnt = 0; // 清除计数值
+				// 开关一侧检测到是低电平，开启人体感应模式
+				led_on(); // 点亮LED
+				cur_light_status = 1;
+				delay_ms(3000);
+				led_off(); // 熄灭LED
+				cur_light_status = 0;
+
+				mode_pir(); // 人体感应模式 (内部有关循环)
+			}
+			// else
+			// {
+			// }
+
+			loop_cnt = 0; // 清除计数值
+		}
 
 #if 0  // 5us延时测试
 		delay_5us();
