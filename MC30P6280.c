@@ -122,7 +122,7 @@ void pir_pin_out(void)
 // 检测到1，开启常亮模式
 void sel_pin_config(void)
 {
-	DDR1 |= 0x01;	  // 输入模式
+	DDR1 |= 0x01; // 输入模式
 	// PUCON &= ~(0x01); // 使能上拉电阻
 	PDCON &= ~(0x01); // 使能下拉电阻
 }
@@ -131,8 +131,8 @@ void sel_pin_config(void)
 void light_sensor_pin_config(void)
 {
 	DDR1 |= 0x01 << 1;
-	// PUCON &= ~(0x01 << 1); // 使能上拉电阻
-	PDCON &= ~(0x01 << 1); // 使能下拉电阻
+	PUCON &= ~(0x01 << 1); // 使能上拉电阻
+						   // PDCON &= ~(0x01 << 1); // 使能下拉电阻
 }
 
 /************************************************
@@ -326,7 +326,7 @@ void led_off(void)
 // 返回值： 1--没有检测到光，2--检测到光
 u8 get_detected_light(void)
 {
-	if (LIGHT_SENSOR_PIN)
+	if (0 == LIGHT_SENSOR_PIN)
 	{
 		// 如果没有检测到光
 		return 1;
@@ -341,7 +341,7 @@ u8 get_detected_light(void)
 // 人体感应模式
 void mode_pir(void)
 {
-	u16 i = 0; // 循环计数值
+	volatile u16 i = 0; // 循环计数值
 
 	while (1)
 	{
@@ -376,7 +376,7 @@ void mode_pir(void)
 			{
 				pir_val = get_pirdata();
 
-				if (wake_up_times >= 15)
+				if (wake_up_times >= WAKE_UP_TIMES_VAL)
 				{
 					if (pir_val >= PIR_THRESHOLD_VAL)
 					{
@@ -385,16 +385,16 @@ void mode_pir(void)
 					}
 					else
 					{
-						detect_cnt = 0;
+						detect_cnt = 0; // 只要有一次不大于设定值，就认为没有感应到有人经过
 					}
 
-					if (detect_cnt >= 3)
+					if (detect_cnt >= PIR_DETECT_TIMES)
 					{
 						IS_DETECT_PERSON_FLAG = 1;
 					}
-				} // if (wake_up_times >= 15)
+				} // if (wake_up_times >= WAKE_UP_TIMES_VAL)
 
-				delay_ms(20);
+				delay_ms(T0_CNT_TIME);
 			}
 			detect_cnt = 0; // 清空计数值
 
@@ -410,9 +410,9 @@ void mode_pir(void)
 				for (i = 0; i < 500; i++)
 				{
 					pir_val = get_pirdata();
-					if (pir_val >= PIR_THRESHOLD_VAL)
+					if (pir_val >= PIR_THRESHOLD_VAL) // 如果检测到的值大于 设定值，说明可能检测到有人
+					// if (pir_val < PIR_THRESHOLD_VAL - 20)
 					{
-						// 如果检测到的值大于 设定值，说明可能检测到有人
 						detect_cnt++;
 					}
 					else
@@ -420,14 +420,16 @@ void mode_pir(void)
 						detect_cnt = 0;
 					}
 
-					if (detect_cnt >= 2)
+					// if (detect_cnt >= PIR_DETECT_TIMES)
+					if (detect_cnt >= (PIR_DETECT_TIMES + 20))
 					{
-						detect_cnt = 0; // 清空计数值
+						// detect_cnt = 0; // 清空计数值
 						IS_DETECT_PERSON_FLAG = 1;
+						delay_ms(20); // 延时20ms再退出，避免与下一次检测pir的时间过近
 						break;
 					}
 
-					delay_ms(20);
+					delay_ms(20); // 这里的时间和循环次数组合，构成10s，而且单次不能低于17ms
 				}
 				detect_cnt = 0; // 清空计数值
 
@@ -435,7 +437,7 @@ void mode_pir(void)
 				{
 					// 如果检测到有人
 					// 重置时间
-					IS_DETECT_PERSON_FLAG = 0;
+					IS_DETECT_PERSON_FLAG = 0; // 清除标志位
 					continue;
 				}
 				else if (0 == IS_DETECT_PERSON_FLAG)
@@ -444,14 +446,13 @@ void mode_pir(void)
 					led_off(); // 熄灭LED
 					cur_light_status = 0;
 				}
-			}
-
+			} // if (IS_DETECT_PERSON_FLAG)
 		} // 如果光敏器件没有检测到光
 
 		// 灯熄灭时，进入低功耗模式
 		if (0 == cur_light_status)
 		{
-			// 打开对应的定时器--20ms唤醒一次
+			// 打开对应的定时器-- T0_CNT_TIME ms唤醒一次
 			TMRCR = 0x40;			   // 时钟源为内部 32768 Hz 低频
 			T0CR = 4;				   // 预分频器分配给T0(而不是WDT)，32分频
 			T0CNT = 255 - T0_CNT_TIME; // 递增计数器(20ms产生一次中断)
@@ -465,7 +466,7 @@ void mode_pir(void)
 			// 从低功耗唤醒后，关闭定时器
 			T0IE = 0;
 
-			if (wake_up_times <= 15)
+			if (wake_up_times <= WAKE_UP_TIMES_VAL)
 			{
 				wake_up_times++;
 			}
@@ -474,7 +475,7 @@ void mode_pir(void)
 			{
 				pir_val = get_pirdata();
 
-				if (wake_up_times >= 15)
+				if (wake_up_times >= WAKE_UP_TIMES_VAL)
 				{
 					if (pir_val >= PIR_THRESHOLD_VAL)
 					{
@@ -486,13 +487,13 @@ void mode_pir(void)
 						detect_cnt = 0;
 					}
 
-					if (detect_cnt >= 3)
+					if (detect_cnt >= PIR_DETECT_TIMES)
 					{
 						IS_DETECT_PERSON_FLAG = 1;
 					}
-				} // if (wake_up_times > 15)
+				} // if (wake_up_times > WAKE_UP_TIMES_VAL)
 
-				delay_ms(20);
+				delay_ms(T0_CNT_TIME);
 			}
 
 			detect_cnt = 0; // 清空计数值
@@ -554,7 +555,6 @@ void main(void)
 
 			if (loop_cnt >= 16)
 			{
-				// loop_cnt = 0; // 清除计数值
 				// 开关一侧检测到是低电平，开启人体感应模式
 				led_on(); // 点亮LED
 				cur_light_status = 1;
@@ -564,9 +564,6 @@ void main(void)
 
 				mode_pir(); // 人体感应模式 (内部有关循环)
 			}
-			// else
-			// {
-			// }
 
 			loop_cnt = 0; // 清除计数值
 		}
@@ -575,7 +572,7 @@ void main(void)
 		delay_5us();
 		P16D = ~P16D;
 #endif //  5us延时测试
-	}
+	} // while (1)
 #endif
 
 #if 0 // 低功耗测试（测试通过）
