@@ -1,5 +1,5 @@
 gplink-2.2.37 (Jan 22 2024)
-Map File - Created 2024-8-28  15:16:06
+Map File - Created 2024-8-28  17:08:22
  
                                  Section Info
                   Section       Type    Address   Location Size(Bytes)
@@ -7,8 +7,8 @@ Map File - Created 2024-8-28  15:16:06
                   STARTUP       code   00000000    program   0x000002
          ID_MC30P6280_0_i       code   0x000001    program   0x000002
               c_interrupt       code   0x000008    program   0x00001e
-           code_MC30P6280       code   0x000017    program   0x00045a
-                   .cinit       code   0x000244    program   0x000010
+           code_MC30P6280       code   0x000017    program   0x000466
+                   .cinit       code   0x00024a    program   0x000010
            ID_MC30P6280_0      idata   0x00002d       data   0x000001
        UD_abs_mc30p6280_0      udata   00000000       data   0x000001
        UD_abs_mc30p6280_1      udata   0x000001       data   0x000001
@@ -47,10 +47,10 @@ Map File - Created 2024-8-28  15:16:06
                             0x000001    0x000001
                             00000000    00000000
                             0x000008    0x000016
-                            0x000017    0x000243
-                            0x000244    0x00024b
+                            0x000017    0x000249
+                            0x00024a    0x000251
  
-                            582 program addresses used
+                            588 program addresses used
  
                               Symbols
                      Name    Address   Location    Storage File
@@ -85,90 +85,90 @@ Map File - Created 2024-8-28  15:16:06
         _cur_light_status   0x00002d       data     extern MC30P6280.asm
          __sdcc_interrupt   0x000008    program     static MC30P6280.asm
                  _int_isr   0x000008    program     extern MC30P6280.asm
-               _00451_DS_   0x000012    program     static MC30P6280.asm
+               _00457_DS_   0x000012    program     static MC30P6280.asm
          END_OF_INTERRUPT   0x000016    program     static MC30P6280.asm
                     _main   0x000017    program     extern MC30P6280.asm
-               _00441_DS_   0x00001a    program     static MC30P6280.asm
-               _00443_DS_   0x000021    program     static MC30P6280.asm
-               _00425_DS_   0x000024    program     static MC30P6280.asm
-               _00428_DS_   0x000038    program     static MC30P6280.asm
-               _00437_DS_   0x00003a    program     static MC30P6280.asm
-               _00445_DS_   0x00003d    program     static MC30P6280.asm
-               _00430_DS_   0x000040    program     static MC30P6280.asm
-               _00433_DS_   0x00005f    program     static MC30P6280.asm
+               _00447_DS_   0x00001a    program     static MC30P6280.asm
+               _00449_DS_   0x00001d    program     static MC30P6280.asm
+               _00431_DS_   0x000020    program     static MC30P6280.asm
+               _00434_DS_   0x000038    program     static MC30P6280.asm
+               _00444_DS_   0x00003a    program     static MC30P6280.asm
+               _00451_DS_   0x00003d    program     static MC30P6280.asm
+               _00437_DS_   0x000040    program     static MC30P6280.asm
+               _00440_DS_   0x00005f    program     static MC30P6280.asm
                 _mode_pir   0x000062    program     extern MC30P6280.asm
-               _00291_DS_   0x000064    program     static MC30P6280.asm
-               _00294_DS_   0x000068    program     static MC30P6280.asm
-               _00407_DS_   0x00006e    program     static MC30P6280.asm
+               _00293_DS_   0x000064    program     static MC30P6280.asm
+               _00296_DS_   0x000068    program     static MC30P6280.asm
+               _00413_DS_   0x00006e    program     static MC30P6280.asm
                _00251_DS_   0x000073    program     static MC30P6280.asm
                _00252_DS_   0x00007f    program     static MC30P6280.asm
                _00254_DS_   0x000085    program     static MC30P6280.asm
                _00256_DS_   0x000086    program     static MC30P6280.asm
-               _00297_DS_   0x000088    program     static MC30P6280.asm
-               _00409_DS_   0x00008e    program     static MC30P6280.asm
-               _00411_DS_   0x00009e    program     static MC30P6280.asm
-               _00258_DS_   0x0000a2    program     static MC30P6280.asm
-               _00259_DS_   0x0000a3    program     static MC30P6280.asm
-               _00263_DS_   0x0000a8    program     static MC30P6280.asm
-               _00264_DS_   0x0000b4    program     static MC30P6280.asm
-               _00300_DS_   0x0000c3    program     static MC30P6280.asm
-               _00413_DS_   0x0000c9    program     static MC30P6280.asm
-               _00414_DS_   0x0000d5    program     static MC30P6280.asm
-               _00266_DS_   0x0000d9    program     static MC30P6280.asm
-               _00267_DS_   0x0000da    program     static MC30P6280.asm
-               _00269_DS_   0x0000e8    program     static MC30P6280.asm
-               _00270_DS_   0x0000f4    program     static MC30P6280.asm
-               _00274_DS_   0x0000fe    program     static MC30P6280.asm
-               _00277_DS_   0x000102    program     static MC30P6280.asm
-               _00279_DS_   0x000116    program     static MC30P6280.asm
-               _00303_DS_   0x000118    program     static MC30P6280.asm
-               _00417_DS_   0x00011e    program     static MC30P6280.asm
-               _00419_DS_   0x00012e    program     static MC30P6280.asm
-               _00281_DS_   0x000132    program     static MC30P6280.asm
-               _00282_DS_   0x000133    program     static MC30P6280.asm
-               _00286_DS_   0x000138    program     static MC30P6280.asm
-               _00287_DS_   0x000144    program     static MC30P6280.asm
-               _00305_DS_   0x000146    program     static MC30P6280.asm
-      _get_detected_light   0x000147    program     extern MC30P6280.asm
-               _00243_DS_   0x00014b    program     static MC30P6280.asm
-               _00245_DS_   0x00014c    program     static MC30P6280.asm
-                 _led_off   0x00014d    program     extern MC30P6280.asm
-                  _led_on   0x000150    program     extern MC30P6280.asm
- ___set_output_open_drain   0x000153    program     extern MC30P6280.asm
-     ___set_input_pull_up   0x000156    program     extern MC30P6280.asm
-             _get_pirdata   0x000159    program     extern MC30P6280.asm
-               _00181_DS_   0x00016a    program     static MC30P6280.asm
-               _00169_DS_   0x000178    program     static MC30P6280.asm
-               _00164_DS_   0x000186    program     static MC30P6280.asm
-               _00170_DS_   0x000189    program     static MC30P6280.asm
-               _00167_DS_   0x000195    program     static MC30P6280.asm
-               _00171_DS_   0x000197    program     static MC30P6280.asm
-               _00175_DS_   0x0001b2    program     static MC30P6280.asm
-               _00221_DS_   0x0001b8    program     static MC30P6280.asm
-               _00177_DS_   0x0001be    program     static MC30P6280.asm
-               _00180_DS_   0x0001c2    program     static MC30P6280.asm
-               _00183_DS_   0x0001c5    program     static MC30P6280.asm
-                _Sys_Init   0x0001c6    program     extern MC30P6280.asm
-                 _IO_Init   0x0001cd    program     extern MC30P6280.asm
-                   _C_RAM   0x0001d5    program     extern MC30P6280.asm
-     _code_MC30P6280_01C5   0x0001dc    program     static MC30P6280.asm
- _light_sensor_pin_config   0x0001df    program     extern MC30P6280.asm
-          _sel_pin_config   0x0001e2    program     extern MC30P6280.asm
-             _pir_pin_out   0x0001e5    program     extern MC30P6280.asm
-              _pir_pin_in   0x0001e7    program     extern MC30P6280.asm
-                _delay_ms   0x0001ea    program     extern MC30P6280.asm
-               _00127_DS_   0x0001f1    program     static MC30P6280.asm
-               _00124_DS_   0x0001fb    program     static MC30P6280.asm
-               _00126_DS_   0x000209    program     static MC30P6280.asm
-               _00130_DS_   0x000215    program     static MC30P6280.asm
-               _delay_5us   0x000216    program     extern MC30P6280.asm
-               _00116_DS_   0x000218    program     static MC30P6280.asm
-               _00119_DS_   0x000220    program     static MC30P6280.asm
-             _delay_100us   0x000221    program     extern MC30P6280.asm
-               _00108_DS_   0x000228    program     static MC30P6280.asm
-               _00105_DS_   0x000230    program     static MC30P6280.asm
-               _00107_DS_   0x000237    program     static MC30P6280.asm
-               _00111_DS_   0x000243    program     static MC30P6280.asm
+               _00299_DS_   0x00008e    program     static MC30P6280.asm
+               _00415_DS_   0x000094    program     static MC30P6280.asm
+               _00417_DS_   0x0000a4    program     static MC30P6280.asm
+               _00258_DS_   0x0000a8    program     static MC30P6280.asm
+               _00259_DS_   0x0000a9    program     static MC30P6280.asm
+               _00263_DS_   0x0000ae    program     static MC30P6280.asm
+               _00264_DS_   0x0000ba    program     static MC30P6280.asm
+               _00302_DS_   0x0000c9    program     static MC30P6280.asm
+               _00419_DS_   0x0000cf    program     static MC30P6280.asm
+               _00420_DS_   0x0000db    program     static MC30P6280.asm
+               _00266_DS_   0x0000df    program     static MC30P6280.asm
+               _00267_DS_   0x0000e0    program     static MC30P6280.asm
+               _00269_DS_   0x0000ee    program     static MC30P6280.asm
+               _00270_DS_   0x0000fa    program     static MC30P6280.asm
+               _00274_DS_   0x000104    program     static MC30P6280.asm
+               _00279_DS_   0x000108    program     static MC30P6280.asm
+               _00281_DS_   0x00011c    program     static MC30P6280.asm
+               _00305_DS_   0x00011e    program     static MC30P6280.asm
+               _00423_DS_   0x000124    program     static MC30P6280.asm
+               _00425_DS_   0x000134    program     static MC30P6280.asm
+               _00283_DS_   0x000138    program     static MC30P6280.asm
+               _00284_DS_   0x000139    program     static MC30P6280.asm
+               _00288_DS_   0x00013e    program     static MC30P6280.asm
+               _00289_DS_   0x00014a    program     static MC30P6280.asm
+               _00307_DS_   0x00014c    program     static MC30P6280.asm
+      _get_detected_light   0x00014d    program     extern MC30P6280.asm
+               _00243_DS_   0x000151    program     static MC30P6280.asm
+               _00245_DS_   0x000152    program     static MC30P6280.asm
+                 _led_off   0x000153    program     extern MC30P6280.asm
+                  _led_on   0x000156    program     extern MC30P6280.asm
+ ___set_output_open_drain   0x000159    program     extern MC30P6280.asm
+     ___set_input_pull_up   0x00015c    program     extern MC30P6280.asm
+             _get_pirdata   0x00015f    program     extern MC30P6280.asm
+               _00181_DS_   0x000170    program     static MC30P6280.asm
+               _00169_DS_   0x00017e    program     static MC30P6280.asm
+               _00164_DS_   0x00018c    program     static MC30P6280.asm
+               _00170_DS_   0x00018f    program     static MC30P6280.asm
+               _00167_DS_   0x00019b    program     static MC30P6280.asm
+               _00171_DS_   0x00019d    program     static MC30P6280.asm
+               _00175_DS_   0x0001b8    program     static MC30P6280.asm
+               _00221_DS_   0x0001be    program     static MC30P6280.asm
+               _00177_DS_   0x0001c4    program     static MC30P6280.asm
+               _00180_DS_   0x0001c8    program     static MC30P6280.asm
+               _00183_DS_   0x0001cb    program     static MC30P6280.asm
+                _Sys_Init   0x0001cc    program     extern MC30P6280.asm
+                 _IO_Init   0x0001d3    program     extern MC30P6280.asm
+                   _C_RAM   0x0001db    program     extern MC30P6280.asm
+     _code_MC30P6280_01CB   0x0001e2    program     static MC30P6280.asm
+ _light_sensor_pin_config   0x0001e5    program     extern MC30P6280.asm
+          _sel_pin_config   0x0001e8    program     extern MC30P6280.asm
+             _pir_pin_out   0x0001eb    program     extern MC30P6280.asm
+              _pir_pin_in   0x0001ed    program     extern MC30P6280.asm
+                _delay_ms   0x0001f0    program     extern MC30P6280.asm
+               _00127_DS_   0x0001f7    program     static MC30P6280.asm
+               _00124_DS_   0x000201    program     static MC30P6280.asm
+               _00126_DS_   0x00020f    program     static MC30P6280.asm
+               _00130_DS_   0x00021b    program     static MC30P6280.asm
+               _delay_5us   0x00021c    program     extern MC30P6280.asm
+               _00116_DS_   0x00021e    program     static MC30P6280.asm
+               _00119_DS_   0x000226    program     static MC30P6280.asm
+             _delay_100us   0x000227    program     extern MC30P6280.asm
+               _00108_DS_   0x00022e    program     static MC30P6280.asm
+               _00105_DS_   0x000236    program     static MC30P6280.asm
+               _00107_DS_   0x00023d    program     static MC30P6280.asm
+               _00111_DS_   0x000249    program     static MC30P6280.asm
                 _INDFbits   00000000       data     extern mc30p6280.asm
                     _INDF   00000000       data     extern mc30p6280.asm
                _T0CNTbits   0x000001       data     extern mc30p6280.asm
@@ -211,5 +211,5 @@ Map File - Created 2024-8-28  15:16:06
                   _T1LOAD   0x00004e       data     extern mc30p6280.asm
               _T1DATAbits   0x00004f       data     extern mc30p6280.asm
                   _T1DATA   0x00004f       data     extern mc30p6280.asm
-                   _cinit   0x000244    program     extern  
+                   _cinit   0x00024a    program     extern  
  

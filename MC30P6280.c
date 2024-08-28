@@ -367,7 +367,7 @@ void mode_pir(void)
 			loop_cnt = 0; // 清除计数值
 		}
 
-		// if (1 == get_detected_light())
+		if (1 == get_detected_light())
 		{
 			// 如果光敏器件没有检测到光
 			// 开始人体感应
@@ -522,7 +522,8 @@ void main(void)
 	   // delay_ms(20);
 #endif // 测试能否从传感器中读到数据
 
-		if (SEL_PIN && 0 == cur_light_status) // 如果灯是灭的，才进行下一步，否则灯会有跳动
+		// if (SEL_PIN && 0 == cur_light_status) // 如果灯是灭的，才进行下一步，否则灯会有跳动
+		if (SEL_PIN)
 		{
 			for (i = 0; i < 20; i++)
 			{
@@ -533,7 +534,7 @@ void main(void)
 				delay_ms(1);
 			}
 
-			if (loop_cnt >= 16)
+			if (loop_cnt >= 16 && 0 == cur_light_status)
 			{
 				// 高电平，LED常亮
 				led_on();
@@ -562,7 +563,7 @@ void main(void)
 				led_off(); // 熄灭LED
 				cur_light_status = 0;
 
-				mode_pir(); // 人体感应模式 (内部有关循环)
+				mode_pir(); // 人体感应模式 (内部有相关循环)
 			}
 
 			loop_cnt = 0; // 清除计数值
